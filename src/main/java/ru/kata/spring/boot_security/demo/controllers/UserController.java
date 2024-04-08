@@ -10,7 +10,7 @@ import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/admin")
 public class UserController {
     private final UserService userServiceImpl;
 
@@ -19,14 +19,14 @@ public class UserController {
         this.userServiceImpl = userServiceImpl;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping()
     public String getAllUsers(@RequestParam(value = "id", required = false) Integer id, Model model) {
         if (id != null) {
             model.addAttribute("user", userServiceImpl.findOne(id));
-            return "showone";
+            return "admin";
         } else {
             model.addAttribute("users", userServiceImpl.findAll());
-            return "showusers";
+            return "admin";
         }
     }
 
