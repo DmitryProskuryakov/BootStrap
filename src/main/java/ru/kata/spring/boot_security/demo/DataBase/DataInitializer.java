@@ -20,9 +20,9 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Role adminRole = new Role("ROLE_ADMIN");
 
-        User user = new User("User", "user", 20);
+        User admin = new User("admin", "admin", 35, "admin@mail.ru", "admin");
 
-        User admin = new User("Admin", "admin", 25);
+        User user = new User("user", "user", 30, "user@mail.ru", "user");
         admin.addRoleToUser(adminRole);
 
 

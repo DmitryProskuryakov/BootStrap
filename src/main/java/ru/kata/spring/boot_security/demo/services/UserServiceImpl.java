@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     @Transactional
     public void save(User user) {
-        User userFromDb = userRepository.findByName(user.getName());
+        User userFromDb = userRepository.findByFirstName(user.getFirstName());
         if (userFromDb != null) {
             return;
         }
@@ -66,12 +66,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public User findByName(String name) {
-        return userRepository.findByName(name);
+        return userRepository.findByFirstName(name);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByName(username);
+        User user = userRepository.findByFirstName(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("User has not found!");

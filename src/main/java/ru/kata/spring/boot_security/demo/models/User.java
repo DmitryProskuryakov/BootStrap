@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -15,9 +16,12 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String password;
+    private String firstName;
+    private String lastName;
+    private String email;
     private int age;
+    private String password;
+
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY)
@@ -29,10 +33,12 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String password, int age) {
-        this.name = name;
-        this.password = password;
+    public User(String firstName, String lastName,  int age, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
         this.age = age;
+        this.password = password;
     }
 
     public void addRoleToUser(Role role) {
@@ -42,7 +48,6 @@ public class User implements UserDetails {
         listRoles.add(role);
     }
 
-
     public int getId() {
         return id;
     }
@@ -51,12 +56,29 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setPassword(String password) {
@@ -79,6 +101,10 @@ public class User implements UserDetails {
         this.listRoles = listRoles;
     }
 
+    public String getListRolesAsString() {
+        return listRoles.stream().map(el->el.getName().substring(el.getName().indexOf('_') + 1)).collect(Collectors.joining(", "));
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getListRoles();
@@ -91,7 +117,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getName();
+        return getFirstName();
     }
 
     @Override
@@ -118,7 +144,9 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
                 ", age=" + age +
                 '}';
     }

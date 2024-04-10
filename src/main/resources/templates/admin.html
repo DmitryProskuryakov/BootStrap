@@ -14,7 +14,10 @@
         <a class="navbar-brand text-white" href="#">
             <div sec:authorize="isAuthenticated()">
                 <span sec:authentication="name"></span>
-                <h7>with roles: </h7>
+                <h7> with roles:</h7>
+
+                <tr th:each="auth : ${#authentication.getAuthorities()}">
+                    <td th:text="${auth.name.substring(auth.name.indexOf('_') + 1)}"></td>
                 </tr>
             </div>
 
@@ -37,9 +40,9 @@
     <div class="col-2 my-3">
         <div class="list-group" id="list-tab" role="tablist">
             <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list"
-               href="#list-home" role="tab" aria-controls="home">Home</a>
+               href="#list-home" role="tab" aria-controls="home">Admin</a>
             <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list"
-               href="#list-profile" role="tab" aria-controls="profile">Profile</a>
+               href="#list-profile" role="tab" aria-controls="profile">User</a>
         </div>
     </div>
     <div class="col-10 bg-light">
@@ -68,6 +71,166 @@
                             <caption>All users</caption>
                             <thead>
                             <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr th:each="user : ${users}">
+                                <td th:text="${user.getId()}"/>
+                                <td th:text="${user.getFirstName()}"/>
+                                <td th:text="${user.getLastName()}"/>
+                                <td th:text="${user.getAge()}"/>
+                                <td th:text="${user.getEmail()}"/>
+                                <td th:text="${user.getListRolesAsString()}">
+
+                            <td>
+
+                                    <button type="button"   class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        edit
+                                    </button>
+
+
+                                    <div class="modal fade" id="exampleModal" tabindex="-1"
+                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content text-center">
+                                                <form th:method="PATCH"
+                                                      th:action="@{/admin?id={num}(num=${user.getId()})}"
+                                                      th:object="${user}">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Заголовок
+                                                            модального окна</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Закрыть"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group required">
+                                                            <div class="controls">
+                                                                <p>
+                                                                    <label for="idUpdateUser">
+                                                                        <strong>ID</strong>
+                                                                        <input class="form-control" type="number"
+                                                                               name="id" id="idUpdateUser"
+                                                                               th:type="number"
+                                                                               th:name="id"
+                                                                               th:value="${user.id}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <p>
+                                                                    <label for="firstNameUpdateUser">
+                                                                        <strong>First Name</strong>
+                                                                        <input class="form-control" type="text"
+                                                                               name="firstName" id="firstNameUpdateUser"
+                                                                               th:type="text"
+                                                                               th:name="firstName"
+                                                                               th:value="${user.firstName}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <p>
+                                                                    <label for="lastNameUpdateUser">
+                                                                        <strong>Last Name</strong>
+                                                                        <input class="form-control" type="text"
+                                                                               name="lastName" id="lastNameUpdateUser"
+                                                                               th:type="text"
+                                                                               th:name="lastName"
+                                                                               th:value="${user.lastName}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <p>
+                                                                    <label for="emailUpdateUser">
+                                                                        <strong>Email Name</strong>
+                                                                        <input class="form-control" type="text"
+                                                                               name="email" id="emailUpdateUser"
+                                                                               th:type="text"
+                                                                               th:name="email"
+                                                                               th:value="${user.email}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <p>
+                                                                    <label for="ageUpdateUser">
+                                                                        <strong>Age</strong>
+                                                                        <input class="form-control" type="number"
+                                                                               name="age" id="ageUpdateUser"
+                                                                               th:type="text"
+                                                                               th:name="age"
+                                                                               th:value="${user.age}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <p>
+                                                                    <label for="passwordUpdateUser">
+                                                                        <strong>Password</strong>
+                                                                        <input class="form-control" type="text"
+                                                                               name="password" id="passwordUpdateUser"
+                                                                               th:type="text"
+                                                                               th:name="password"
+                                                                               th:value="${user.password}" required>
+                                                                    </label>
+                                                                </p>
+
+                                                                <label class="container-fluid col-6"
+                                                                       for="updateUserRoles">
+                                                                    <strong>Role</strong>
+                                                                    <select id="updateUserRoles" class="form-select"
+                                                                            name="roles"
+                                                                            multiple size="2">
+                                                                        <option th:each="role: ${roles}"
+                                                                                th:value="${role.getName()}">
+                                                                            <th:block
+                                                                                    th:text="${role.getName()}">
+                                                                            </th:block>
+                                                                        </option>
+                                                                    </select>
+                                                                </label>
+
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" id="updateFormCloseButton"
+                                                                        class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Close
+                                                                </button>
+                                                                <button type="submit" class="btn btn-danger">Update
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="New user-tab">
+                        uigu
+                    </div>
+                </div>
+
+            </div>
+            <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
+                <div>
+                    <h1>User panel</h1>
+                </div>
+                <div class="tab-content" id="tabContent">
+                    <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="User table-tab">
+                        <table class="table caption-top table-striped">
+                            <caption>All users</caption>
+                            <thead>
+                            <tr>
                                 <th scope="col">Id</th>
                                 <th scope="col">First</th>
                                 <th scope="col">Age</th>
@@ -75,33 +238,25 @@
                             </thead>
                             <tbody>
 
-                            <tr th:each="user : ${users}">
-                                <td th:text="${user.getId()}"/>
-                                <td th:text="${user.getName()}"/>
-                                <td th:text="${user.getAge()}"/>
+                            <tr th:each="auth : ${#authentication.getPrincipal()}">
+                                <td th:text="${auth.id}"></td>
+                                <td th:text="${auth.firstName}"></td>
+                                <td th:text="${auth.age}"></td>
 
                             </tr>
-
                             </tbody>
                         </table>
                     </div>
-                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
-                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+
+
                 </div>
-
-
-            </div>
-            <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">Lorem ipsum
-                dolor sit, amet consectetur adipisicing elit. Tempore, omnis fugit consectetur labore error iusto esse
-                repellat vel expedita ad eligendi asperiores cupiditate molestias consequatur!
             </div>
         </div>
     </div>
-</div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
 </body>
 </html>

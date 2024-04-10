@@ -33,7 +33,7 @@ public class UserController {
     @GetMapping("/delete")
     public String deleteUser(@RequestParam(value = "id", required = false) Integer id) {
         userServiceImpl.delete(id);
-        return "redirect:/users/get-all";
+        return "redirect:/admin/get-all";
     }
 
     @GetMapping("/new")
@@ -44,7 +44,7 @@ public class UserController {
     @PostMapping()
     public String addNewUser(@ModelAttribute("user") User user) {
         userServiceImpl.save(user);
-        return "redirect:/users/get-all";
+        return "redirect:/admin";
     }
 
     @GetMapping("/change")
@@ -55,6 +55,6 @@ public class UserController {
     @PatchMapping()
     public String editUser(@ModelAttribute("user") User user, @RequestParam(value = "id", required = false) Integer id) {
         userServiceImpl.update(id, user);
-        return "redirect:/users/get-all";
+        return "redirect:/admin";
     }
 }
