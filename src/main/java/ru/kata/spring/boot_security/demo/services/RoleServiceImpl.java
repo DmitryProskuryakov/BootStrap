@@ -6,12 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Autowired
@@ -20,6 +22,8 @@ public class RoleServiceImpl implements RoleService{
     }
 
     public Set<Role> getRoleSet() {
-        return roleRepository.findAll().stream().distinct().collect(Collectors.toSet());
+        return new HashSet<>(roleRepository.findAll().stream()
+                .collect(Collectors.toMap(Role::getName, Function.identity(), (existing, replacement) -> existing))
+                .values());
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String firstName, String lastName,  int age, String email, String password) {
+    public User(String firstName, String lastName, int age, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -45,7 +46,9 @@ public class User implements UserDetails {
         if (listRoles == null) {
             listRoles = new HashSet<>();
         }
-        listRoles.add(role);
+        if (!listRoles.contains(role)) {
+            listRoles.add(role);
+        }
     }
 
     public int getId() {
@@ -102,7 +105,8 @@ public class User implements UserDetails {
     }
 
     public String getListRolesAsString() {
-        return listRoles.stream().map(el->el.getName().substring(el.getName().indexOf('_') + 1)).collect(Collectors.joining(", "));
+        return listRoles.stream().map(el -> el.getName().substring(el.getName().indexOf('_') + 1)).
+                collect(Collectors.joining(", "));
     }
 
     @Override
@@ -149,5 +153,18 @@ public class User implements UserDetails {
                 ", email='" + email + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && age == user.age && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, email, age);
     }
 }

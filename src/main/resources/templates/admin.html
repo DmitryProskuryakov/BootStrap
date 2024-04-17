@@ -16,8 +16,8 @@
                 <span class="fw-bold" sec:authentication="name"></span>
                 <h7> with roles:</h7>
 
-                <tr th:each="auth : ${#authentication.getAuthorities()}">
-                    <td th:text="${auth.name.substring(auth.name.indexOf('_') + 1)}"></td>
+                <tr th:each="role : ${user.getListRoles()}">
+                    <td th:text="${role.name.substring(role.name.indexOf('_') + 1)}"></td>
                 </tr>
             </div>
 
@@ -438,8 +438,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-
-                                <tr th:each="user : ${users}">
+                                <tr>
                                     <td th:text="${user.getId()}"/>
                                     <td th:text="${user.getFirstName()}"/>
                                     <td th:text="${user.getLastName()}"/>

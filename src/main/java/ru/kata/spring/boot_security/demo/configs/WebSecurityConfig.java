@@ -16,9 +16,7 @@ import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
-    @Autowired
-    @Lazy
-    UserServiceImpl userServiceImpl;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
     public WebSecurityConfig(SuccessUserHandler successUserHandler) {
@@ -35,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/users/**", "/admin/**").hasRole("ADMIN")
-                .antMatchers("/login/**", "/user/**").permitAll()
+                .antMatchers("/login/**", "/user/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin().successHandler(successUserHandler)
@@ -50,4 +48,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    @Lazy
+    private void setUserServiceImpl(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
+    }
 }

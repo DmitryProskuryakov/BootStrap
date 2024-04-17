@@ -34,20 +34,27 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public User findOne(int id) {
-        Optional<User> foundPerson = userRepository.findById(id);
-
-        return foundPerson.orElse(null);
+    public Optional<User> findOne(int id) {
+        return userRepository.findById(id);
     }
 
     @Override
     @Transactional
     public void save(User user) {
         User userFromDb = userRepository.findByFirstName(user.getFirstName());
+
         if (userFromDb != null) {
             return;
         }
-        user.addRoleToUser(new Role("ROLE_USER"));
+
+        Set<Role> roleSet = user.getListRoles();
+
+        for (Role role : roleSet) {
+
+            if (role.getName().equals("ROLE_ADMIN")) {
+                user.getListRoles().add(new Role("ROLE_USER"));
+            }
+        }
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -55,23 +62,29 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional
-    public void update(int id, User updatedPerson) {
-        updatedPerson.setId(id);
-        updatedPerson.setPassword(bCryptPasswordEncoder.encode(updatedPerson.getPassword()));
+    public void update(User updatedPerson) {
+        User userFromDb = userRepository.findByFirstName(updatedPerson.getFirstName());
 
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isPresent()) {
-            Set<Role> roleList = user.get().getListRoles();
-
-            for (Role role : roleList) {
-
-                if (role.getName().equals("ROLE_USER")) {
-                    updatedPerson.addRoleToUser(role);
-                }
-            }
+        if (userFromDb == null) {
+            return;
         }
-        userRepository.save(updatedPerson);
+
+        userFromDb.setFirstName(updatedPerson.getFirstName());
+        userFromDb.setLastName(updatedPerson.getLastName());
+        userFromDb.setEmail(updatedPerson.getEmail());
+        userFromDb.setPassword(bCryptPasswordEncoder.encode(updatedPerson.getPassword()));
+        userFromDb.getListRoles().clear();
+
+        for (Role role : updatedPerson.getListRoles()) {
+
+            if (role.getName().equals("ROLE_ADMIN")) {
+                userFromDb.getListRoles().add(new Role("ROLE_USER"));
+            }
+
+            userFromDb.addRoleToUser(role);
+        }
+
+        userRepository.save(userFromDb);
     }
 
     @Override
