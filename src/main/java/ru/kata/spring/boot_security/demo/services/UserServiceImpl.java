@@ -14,7 +14,6 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,15 +46,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             return;
         }
 
-        Set<Role> roleSet = user.getListRoles();
-
-        for (Role role : roleSet) {
-
-            if (role.getName().equals("ROLE_ADMIN")) {
-                user.getListRoles().add(new Role("ROLE_USER"));
-            }
-        }
-
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -76,11 +66,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userFromDb.getListRoles().clear();
 
         for (Role role : updatedPerson.getListRoles()) {
-
-            if (role.getName().equals("ROLE_ADMIN")) {
-                userFromDb.getListRoles().add(new Role("ROLE_USER"));
-            }
-
             userFromDb.addRoleToUser(role);
         }
 
